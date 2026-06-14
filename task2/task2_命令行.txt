@@ -1,0 +1,22 @@
+cd ~/final_exp
+SPARK_HOME=/home/workspace/spark-3.0.0-bin-hadoop3.2
+
+# 编译打 jar
+javac -encoding UTF-8 -cp "$SPARK_HOME/jars/*" -d classes PageRankTask2.java
+cd classes && jar cf ../task2_pagerank.jar . && cd ~/final_exp
+
+# 版本1：log 平滑（默认）
+hdfs dfs -rm -r /user/225220002a/final_exp/exp3/task2_log_top20
+$SPARK_HOME/bin/spark-submit --class PageRankTask2 --master yarn \
+  task2_pagerank.jar \
+  hdfs:///user/225220002a/final_exp/exp3/clean_edges.tsv \
+  hdfs:///user/225220002a/final_exp/exp3/task2_log_top20 \
+  10 log
+
+# 版本2：纯频次（去掉 log）
+hdfs dfs -rm -r /user/225220002a/final_exp/exp3/task2_freq_top20
+$SPARK_HOME/bin/spark-submit --class PageRankTask2 --master yarn \
+  task2_pagerank.jar \
+  hdfs:///user/225220002a/final_exp/exp3/clean_edges.tsv \
+  hdfs:///user/225220002a/final_exp/exp3/task2_freq_top20 \
+  10 freq

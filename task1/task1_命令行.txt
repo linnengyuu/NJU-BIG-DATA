@@ -1,0 +1,19 @@
+cd ~/final_exp
+SPARK_HOME=/home/workspace/spark-3.0.0-bin-hadoop3.2
+
+# 1. 重新编译
+javac -encoding UTF-8 -cp "$SPARK_HOME/jars/*" -d classes PageRankTask1.java
+
+# 2. 重新打 jar
+cd classes && jar cf ../task1_pagerank.jar . && cd ~/final_exp
+
+# 3. 删掉旧输出目录（如果存在），再跑
+rm -rf /user/225220002a/final_exp/exp3/task1_pagerank_top20
+
+$SPARK_HOME/bin/spark-submit \
+  --class PageRankTask1 \
+  --master yarn \
+  task1_pagerank.jar \
+  hdfs:///user/225220002a/final_exp/exp3/clean_edges.tsv \
+  hdfs:///user/225220002a/final_exp/exp3/task1_pagerank_top20 \
+  10
